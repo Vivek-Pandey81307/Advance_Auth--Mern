@@ -1,10 +1,11 @@
 import express from 'express'
+import mongoose from 'mongoose'
+import dotenv from 'dotenv'
+dotenv.config()
 const app = express();
-const port = 3000;
-app.use('/',(req,res,next)=>{
-    res.send("Hello there")
+mongoose.connect(process.env.MONGO_URI)
+.then(()=>{
+    app.listen(5000);
+    console.log("Database is connected listening to localhost 5000")
 })
-console.log("yeahhhhhhh")
-app.listen(port,()=>{
-    console.log("listening to localhost 3000")
-})
+.catch((error)=>console.log(error))
