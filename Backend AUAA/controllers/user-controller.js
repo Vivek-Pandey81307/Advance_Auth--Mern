@@ -1,5 +1,8 @@
 import User from '../model/User.js'
 import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
+import dotenv from 'dotenv'
+dotenv.config()
 const signup  = async(req,res,next)=>{
     const {name,email,password} = req.body;
     let existingUser;
@@ -27,8 +30,12 @@ const login = async(req,res,next)=>{
         inputEmail = await User.findOne({email:req.body.email})
     }catch(err){console.log(err);return res.status(404).json({message : "User with provided email doesn't exist"})}
     const hashedInputPassword = bcrypt.hashSync(req.body.password)
-    if(bcrypt.compareSync(req.body.password,inputEmail.password)){
-        res.status(200).json({message:"Successfully login with registered email!"})
-    }else{res.status(401).json({message : "Incorrect Password"})}   
+    if(!bcrypt.compareSync(req.body.password,inputEmail.password)){
+       return res.status(401).json({message : "Incorrect Password"})
+    }
+    const token = jwt.sign({id:inputEmail.__id},process.env.SECRET_KEY,{expiresIn : "1hr"})
+    return res.status(200).json({message:"Successfully login with registered email!",user:inputEmail,token})
+ 
 }
+
 export {signup,login};
