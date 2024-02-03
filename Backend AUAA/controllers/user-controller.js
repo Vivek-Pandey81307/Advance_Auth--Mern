@@ -28,7 +28,7 @@ const login = async(req,res,next)=>{
     }catch(err){console.log(err);return res.status(404).json({message : "User with provided email doesn't exist"})}
     const hashedInputPassword = bcrypt.hashSync(req.body.password)
     if(bcrypt.compareSync(req.body.password,inputEmail.password)){
-        res.status(201).json({message:"Successfully login with registered email!"})
+        res.status(200).json({message:"Successfully login with registered email!"})
     }else{res.status(401).json({message : "Incorrect Password"})}   
 }
 export {signup,login};
