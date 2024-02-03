@@ -37,5 +37,8 @@ const login = async(req,res,next)=>{
     return res.status(200).json({message:"Successfully login with registered email!",user:inputEmail,token})
  
 }
-
-export {signup,login};
+const verifytoken  = (req,res,next)=>{
+    const headers = req.headers
+    console.log(headers);
+}
+export {signup,login,verifytoken};
