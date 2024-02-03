@@ -11,6 +11,6 @@ app.use('/api',router);
 mongoose.connect(process.env.MONGO_URI)
 .then(()=>{
     app.listen(5000);
-    console.log("Database is connected listening to localhost 5000")
+    console.log("Database is connected listening to localhost 5000");
 })
 .catch((error)=>console.log(error))
