@@ -33,12 +33,18 @@ const login = async(req,res,next)=>{
     if(!bcrypt.compareSync(req.body.password,inputEmail.password)){
        return res.status(401).json({message : "Incorrect Password"})
     }
-    const token = jwt.sign({id:inputEmail.__id},process.env.SECRET_KEY,{expiresIn : "1hr"})
+    const token = jwt.sign({id:inputEmail.__id},process.env.SECRET_KEY,{expiresIn : "4hr"})
     return res.status(200).json({message:"Successfully login with registered email!",user:inputEmail,token})
  
 }
 const verifytoken  = (req,res,next)=>{
-    const headers = req.headers
-    console.log(headers);
+    const headers = req.headers.authorization;
+    const token = headers.split(" ")[1];
+    if(!token){return res.status(404).json({message : "No token found"})}
+       jwt.verify(String(token),process.env.SECRET_KEY,(err,user)=>{
+        if(err){
+           return  res.status(404).json({message:"Token doesn't match"})
+        }console.log(user);
+    })
 }
 export {signup,login,verifytoken};
