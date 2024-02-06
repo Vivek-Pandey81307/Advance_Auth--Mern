@@ -45,7 +45,21 @@ const verifyToken  = (req,res,next)=>{
         if(err){
            return  res.status(404).json({message:"Token doesn't match"})
         }console.log(user.id);
-        
-    })
+        console.log(req.headers)
+        req.id = user.id;
+        console.log(req.id)
+    });next();
 }
-export {signup,login,verifyToken};
+const getUser = async(req,res,next)=>{
+    const userId = req.id;
+    let user;
+    try{
+        user = await User.findById(userId,"-password")
+    }catch(err){
+        console.log(err)
+    }
+    if(!user){
+        return res.status(404).json({message :"User not found"})
+    }return res.status(200).json({user})
+}
+export {signup,login,verifyToken,getUser};
