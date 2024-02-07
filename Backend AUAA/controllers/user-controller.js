@@ -33,26 +33,24 @@ const login = async(req,res,next)=>{
     if(!bcrypt.compareSync(req.body.password,inputEmail.password)){
        return res.status(401).json({message : "Incorrect Password"})
     }
-    const token = jwt.sign({id:inputEmail._id},process.env.SECRET_KEY,{expiresIn : "4hr"})
+    const token = jwt.sign({id:inputEmail._id},process.env.SECRET_KEY,{expiresIn : "30s"})
     res.cookie(String(inputEmail._id),token,{
         path : '/',expires: new Date(Date.now()+1000*30),
         httpOnly:true,sameSite : 'lax'
-
     })
     return res.status(200).json({message:"Successfully login with registered email!",user:inputEmail,token})
  
 }
-const verifyToken  = (req,res,next)=>{
-    const headers = req.headers.authorization;
-    const token = headers.split(" ")[1];
+const verifyToken = (req,res,next)=>{
+    const cookie = req.headers.cookie;
+    const token = cookie.split("=")[1]
     if(!token){return res.status(404).json({message : "No token found"})}
     jwt.verify(String(token),process.env.SECRET_KEY,(err,user)=>{
         if(err){
            return  res.status(404).json({message:"Token doesn't match"})
-        }console.log(user.id);
-        console.log(req.headers)
+        }
         req.id = user.id;
-        console.log(req.id);
+        
     });next();
 }
 const getUser = async(req,res,next)=>{
