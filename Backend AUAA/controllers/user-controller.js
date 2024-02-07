@@ -29,11 +29,16 @@ const login = async(req,res,next)=>{
     try{
         inputEmail = await User.findOne({email:req.body.email})
     }catch(err){console.log(err);return res.status(404).json({message : "User with provided email doesn't exist"})}
-    const hashedInputPassword = bcrypt.hashSync(req.body.password)
+    // const hashedInputPassword = bcrypt.hashSync(req.body.password)
     if(!bcrypt.compareSync(req.body.password,inputEmail.password)){
        return res.status(401).json({message : "Incorrect Password"})
     }
     const token = jwt.sign({id:inputEmail._id},process.env.SECRET_KEY,{expiresIn : "4hr"})
+    res.cookie(String(inputEmail._id),token,{
+        path : '/',expires: new Date(Date.now()+1000*30),
+        httpOnly:true,sameSite : 'lax'
+
+    })
     return res.status(200).json({message:"Successfully login with registered email!",user:inputEmail,token})
  
 }
@@ -47,7 +52,7 @@ const verifyToken  = (req,res,next)=>{
         }console.log(user.id);
         console.log(req.headers)
         req.id = user.id;
-        console.log(req.id)
+        console.log(req.id);
     });next();
 }
 const getUser = async(req,res,next)=>{
