@@ -1,5 +1,6 @@
 import { Box,TextField,Button,Typography } from '@mui/material'
 import React, { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 const Signup = () => {
     const history = useNavigate();
@@ -7,13 +8,21 @@ const Signup = () => {
     const handleChange =(e)=>{
         setInputs(prev=>({...prev,[e.target.name]:e.target.value}))
     }
-    const sendRequest = async()=>{
-        const res =await  axios.post(('http://localhost:5000/api/signup'),{
-            name:inputs.name,
-            email : inputs.email,
-            password : inputs.password}).catch(err=>console.log(err));
-        const data=await res.data;
-    }   
+    const sendRequest = async () => {
+        try {
+            const res = await axios.post('http://localhost:5000/api/signup', {
+                name: inputs.name,
+                email: inputs.email,
+                password: inputs.password
+            });
+            const data = res.data;
+            return data;
+        } catch (error) {
+            console.error('Error occurred while sending request:', error);
+            throw error; // Rethrow the error to be caught by the caller
+        }
+    }
+    
     const handleSubmit=(e)=>{
         e.preventDefault();
         sendRequest().then(()=>history("/login"));
