@@ -33,7 +33,10 @@ const login = async(req,res,next)=>{
     if(!bcrypt.compareSync(req.body.password,inputEmail.password)){
        return res.status(401).json({message : "Incorrect Password"})
     }
-    const token = jwt.sign({id:inputEmail._id},process.env.SECRET_KEY,{expiresIn : "30s"})
+    const token = jwt.sign({id:inputEmail._id},process.env.SECRET_KEY,{expiresIn : "35s"})
+    console.log("Generated Token\n",token);
+   
+    if(req.cookies[`${inputEmail._id}`]){req.cookies[`${inputEmail._id}`]=""}
     res.cookie(String(inputEmail._id),token,{
         path : '/',expires: new Date(Date.now()+1000*30),
         httpOnly:true,sameSite : 'lax'
@@ -67,6 +70,7 @@ const getUser = async(req,res,next)=>{
 }
 const refreshToken = (req,res,next)=>{
     const cookie = req.headers.cookie;
+   
     const prevToken = cookie.split("=")[1]
     if(!prevToken){
         return res.status(400).json({message:"Couldn't find token"})
@@ -74,9 +78,10 @@ const refreshToken = (req,res,next)=>{
     jwt.verify(String(prevToken),process.env.SECRET_KEY,(err,user)=>{
         if(err){console.log(err);return res.status(403).json({message:'Authentication failed'})}
         res.clearCookie( `${user.id}`)
-        req.cookie[`${user.id}`]="";
+        req.cookies[`${user.id}`]="";
 
-        const token = jwt.sign({id:user.id},JWT_SECRET_KEY,{expiresIn:"30s"})
+        const token = jwt.sign({id:user.id},process.env.SECRET_KEY,{expiresIn:"35s"})
+        console.log("Regenerated Token\n",token)
         res.cookie(String(user.id),token,{
             path : '/',expires: new Date(Date.now()+1000*30),
             httpOnly:true,sameSite : 'lax'
