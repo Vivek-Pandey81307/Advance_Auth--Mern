@@ -38,7 +38,7 @@ const login = async(req,res,next)=>{
         path : '/',expires: new Date(Date.now()+1000*30),
         httpOnly:true,sameSite : 'lax'
     })
-    return res.status(200).json({message:"Successfully login with registered email!",user:inputEmail,token})
+    return res.status(200).json({message:"Successfully login with registered email!",user:inputEmail})
  
 }
 const verifyToken = (req,res,next)=>{
