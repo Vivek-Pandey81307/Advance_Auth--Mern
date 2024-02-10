@@ -22,7 +22,7 @@ const Signup = () => {
             throw error; // Rethrow the error to be caught by the caller
         }
     }
-    
+       
     const handleSubmit=(e)=>{
         e.preventDefault();
         sendRequest().then(()=>history("/login"));

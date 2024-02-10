@@ -65,4 +65,24 @@ const getUser = async(req,res,next)=>{
         return res.status(404).json({message :"User not found"})
     }return res.status(200).json({user})
 }
-export {signup,login,verifyToken,getUser};
+const refreshToken = (req,res,next)=>{
+    const cookie = req.headers.cookie;
+    const prevToken = cookie.split("=")[1]
+    if(!prevToken){
+        return res.status(400).json({message:"Couldn't find token"})
+    }
+    jwt.verify(String(prevToken),process.env.SECRET_KEY,(err,user)=>{
+        if(err){console.log(err);return res.status(403).json({message:'Authentication failed'})}
+        res.clearCookie( `${user.id}`)
+        req.cookie[`${user.id}`]="";
+
+        const token = jwt.sign({id:user.id},JWT_SECRET_KEY,{expiresIn:"30s"})
+        res.cookie(String(user.id),token,{
+            path : '/',expires: new Date(Date.now()+1000*30),
+            httpOnly:true,sameSite : 'lax'
+        })
+        req.id = user.id
+        next();
+    })
+}
+export {signup,login,verifyToken,getUser,refreshToken};
