@@ -2,7 +2,10 @@ import { Box, Typography, TextField ,Button} from '@mui/material'
 import React,{useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 import axios from 'axios'
+import { useDispatch } from 'react-redux'
+import { authActions } from '../store'
 const Login = () => {
+  const dispatch =useDispatch();
   const history = useNavigate();
   const [inputs,setInputs]=useState({email:"",password:""})
   const sendRequest =async()=>{
@@ -20,7 +23,7 @@ const Login = () => {
   }
   const handleSubmit =(e)=>{
     e.preventDefault();
-    sendRequest().then(()=>history("/user"))
+    sendRequest().then(()=>{dispatch(authActions.login())}).then(()=>history("/user"))
   }
   const handleChange=(e)=>{
     setInputs((prev)=>({...prev,[e.target.name]: e.target.value}))
